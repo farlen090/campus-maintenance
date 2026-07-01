@@ -21,7 +21,9 @@ body {
 }
 
 button,
-select {
+input,
+select,
+textarea {
   font: inherit;
 }
 
@@ -119,7 +121,8 @@ h3 {
 }
 
 .summary-panel,
-.request-panel {
+.request-panel,
+.form-panel {
   background: #ffffff;
   border: 1px solid #d9e1ea;
   border-radius: 8px;
@@ -197,6 +200,10 @@ h3 {
   background: #d9e8ff;
 }
 
+.under-review {
+  background: #fff1b8;
+}
+
 .assigned {
   background: #e6dcff;
 }
@@ -205,8 +212,86 @@ h3 {
   background: #ffe7bf;
 }
 
+.resolved {
+  background: #ccebdc;
+}
+
 .closed {
   background: #d7eadf;
+}
+
+.muted-text {
+  color: #5a6678;
+  margin-bottom: 0;
+}
+
+.report-form {
+  display: grid;
+  gap: 14px;
+}
+
+.report-form label {
+  color: #405066;
+  display: grid;
+  font-size: 0.92rem;
+  gap: 7px;
+}
+
+.report-form input,
+.report-form select,
+.report-form textarea {
+  background: #ffffff;
+  border: 1px solid #b8c4d2;
+  border-radius: 8px;
+  color: #18202f;
+  min-height: 42px;
+  padding: 9px 10px;
+  width: 100%;
+}
+
+.report-form textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.primary-button {
+  background: #1f5f8b;
+  border: 1px solid #1f5f8b;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  min-height: 42px;
+  padding: 10px 16px;
+}
+
+.validation-summary,
+.success-summary {
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px;
+}
+
+.validation-summary {
+  background: #fff1f0;
+  border: 1px solid #f0b8b2;
+  color: #7a271a;
+}
+
+.validation-summary ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.success-summary {
+  background: #eef9f2;
+  border: 1px solid #b9dec8;
+  color: #25543b;
 }
 
 @media (max-width: 760px) {

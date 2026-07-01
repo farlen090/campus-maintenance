@@ -40,4 +40,65 @@ describe("App shell", () => {
 
     expect(selector).toHaveValue("technician");
   });
+
+  it("TC-007 submits a valid report", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Buat Laporan" }));
+    await user.type(
+      screen.getByLabelText("Judul laporan"),
+      "Kursi auditorium rusak"
+    );
+    await user.type(screen.getByLabelText("Lokasi"), "Auditorium Utama");
+    await user.selectOptions(screen.getByLabelText("Kategori"), "Lainnya");
+    await user.type(
+      screen.getByLabelText("Deskripsi"),
+      "Sandaran kursi bagian depan patah dan perlu diperbaiki."
+    );
+    await user.click(screen.getByRole("button", { name: "Simpan Laporan" }));
+
+    expect(
+      screen.getByText("Laporan baru berhasil dibuat.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Kursi auditorium rusak")).toBeInTheDocument();
+    expect(screen.getByText("Auditorium Utama")).toBeInTheDocument();
+  });
+
+  it("TC-008 validates required fields", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Buat Laporan" }));
+    await user.click(screen.getByRole("button", { name: "Simpan Laporan" }));
+
+    expect(
+      screen.getByText("Lengkapi field wajib sebelum menyimpan.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Judul wajib diisi.")).toBeInTheDocument();
+    expect(screen.getByText("Deskripsi wajib diisi.")).toBeInTheDocument();
+    expect(screen.getByText("Lokasi wajib diisi.")).toBeInTheDocument();
+    expect(screen.getByText("Kategori wajib dipilih.")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Laporan baru berhasil dibuat.")
+    ).not.toBeInTheDocument();
+  });
+
+  it("TC-009 creates a Submitted report with initial status history", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Buat Laporan" }));
+    await user.type(screen.getByLabelText("Judul laporan"), "AC aula bocor");
+    await user.type(screen.getByLabelText("Lokasi"), "Aula Barat");
+    await user.selectOptions(screen.getByLabelText("Kategori"), "AC");
+    await user.type(
+      screen.getByLabelText("Deskripsi"),
+      "Air menetes dari AC saat acara berlangsung."
+    );
+    await user.click(screen.getByRole("button", { name: "Simpan Laporan" }));
+
+    expect(screen.getByText("Status awal: Submitted")).toBeInTheDocument();
+    expect(screen.getByText("Riwayat awal: Submitted")).toBeInTheDocument();
+  });
 });

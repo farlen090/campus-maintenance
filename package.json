@@ -10,11 +10,9 @@
     "test": "node scripts/run-local-tool.cjs vitest"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^6.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "typescript": "^5.7.2",
-    "vite": "^8.1.2"
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
@@ -22,7 +20,9 @@
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^6.0.3",
     "jsdom": "^25.0.1",
-    "vitest": "^2.1.8"
+    "vite": "^8.1.2",
+    "vitest": "^4.1.9"
   }
 }

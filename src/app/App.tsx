@@ -5,6 +5,7 @@ import {
   type CreateReportInput,
   type CreatedReportResult
 } from "../features/reports/components/CreateReportForm";
+import { ReportListPage } from "../features/reports/components/ReportListPage";
 import { requestStatusKeys } from "../features/reports/constants";
 import { statusHistories as initialStatusHistories } from "../features/reports/data/statusHistories";
 import { serviceRequests } from "../features/reports/data/serviceRequests";
@@ -125,7 +126,13 @@ export function App() {
       </nav>
 
       <main className="content-grid">
-        {activeNav === "Buat Laporan" ? (
+        {activeNav === "Daftar Laporan" ? (
+          <ReportListPage
+            requests={visibleRequests}
+            users={users}
+            onCreateClick={() => setActiveNav("Buat Laporan")}
+          />
+        ) : activeNav === "Buat Laporan" ? (
           <CreateReportForm
             canCreate={activeReporter !== null}
             reporterName={activeReporter?.name ?? null}
@@ -159,27 +166,29 @@ export function App() {
           </section>
         )}
 
-        <section className="request-panel" aria-labelledby="requests-title">
-          <div className="section-heading">
-            <p className="eyebrow">Dummy data</p>
-            <h2 id="requests-title">Laporan Terbaru</h2>
-          </div>
+        {activeNav === "Daftar Laporan" ? null : (
+          <section className="request-panel" aria-labelledby="requests-title">
+            <div className="section-heading">
+              <p className="eyebrow">Dummy data</p>
+              <h2 id="requests-title">Laporan Terbaru</h2>
+            </div>
 
-          <div className="request-list">
-            {latestRequests.map((request) => (
-              <article className="request-item" key={request.id}>
-                <div>
-                  <span className="request-id">{request.id}</span>
-                  <h3>{request.title}</h3>
-                  <p>{request.location}</p>
-                </div>
-                <span className={`status-badge ${request.statusKey}`}>
-                  {request.status}
-                </span>
-              </article>
-            ))}
-          </div>
-        </section>
+            <div className="request-list">
+              {latestRequests.map((request) => (
+                <article className="request-item" key={request.id}>
+                  <div>
+                    <span className="request-id">{request.id}</span>
+                    <h3>{request.title}</h3>
+                    <p>{request.location}</p>
+                  </div>
+                  <span className={`status-badge ${request.statusKey}`}>
+                    {request.status}
+                  </span>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

@@ -101,4 +101,87 @@ describe("App shell", () => {
     expect(screen.getByText("Status awal: Submitted")).toBeInTheDocument();
     expect(screen.getByText("Riwayat awal: Submitted")).toBeInTheDocument();
   });
+
+  it("TC-010 renders the report list with key report columns", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Daftar Laporan" }));
+
+    expect(
+      screen.getByRole("heading", { name: "Daftar Laporan" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "ID" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Judul" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Lokasi" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Kategori" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Prioritas" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Status" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Teknisi" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("REQ-001")).toBeInTheDocument();
+    expect(
+      screen.getByText("Proyektor Ruang 101 tidak menyala")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Ruang 101")).toBeInTheDocument();
+    expect(screen.getAllByText("Peralatan Kelas").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("High").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Submitted").length).toBeGreaterThan(0);
+  });
+
+  it("TC-011 searches reports by title", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Daftar Laporan" }));
+    await user.type(screen.getByLabelText("Cari laporan"), "internet");
+
+    expect(
+      screen.getByText("Internet laboratorium bermasalah")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Proyektor Ruang 101 tidak menyala")
+    ).not.toBeInTheDocument();
+  });
+
+  it("TC-012 searches reports by location", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Daftar Laporan" }));
+    await user.type(screen.getByLabelText("Cari laporan"), "Ruang 204");
+
+    expect(screen.getByText("AC Ruang 204 tidak dingin")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Internet laboratorium bermasalah")
+    ).not.toBeInTheDocument();
+  });
+
+  it("TC-013 filters reports by status, category, and priority", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Daftar Laporan" }));
+    await user.selectOptions(screen.getByLabelText("Filter status"), "Closed");
+    await user.selectOptions(screen.getByLabelText("Filter kategori"), "Kebersihan");
+    await user.selectOptions(screen.getByLabelText("Filter prioritas"), "Low");
+
+    expect(
+      screen.getByText("Ruang kelas perlu dibersihkan")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Internet laboratorium bermasalah")
+    ).not.toBeInTheDocument();
+  });
 });

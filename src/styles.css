@@ -122,11 +122,16 @@ h3 {
 
 .summary-panel,
 .request-panel,
-.form-panel {
+.form-panel,
+.list-panel {
   background: #ffffff;
   border: 1px solid #d9e1ea;
   border-radius: 8px;
   padding: 20px;
+}
+
+.list-panel {
+  grid-column: 1 / -1;
 }
 
 .section-heading {
@@ -161,6 +166,77 @@ h3 {
 .request-list {
   display: grid;
   gap: 12px;
+}
+
+.list-header {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.filter-bar {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(3, minmax(150px, 1fr));
+  margin-bottom: 16px;
+}
+
+.filter-bar label {
+  color: #405066;
+  display: grid;
+  font-size: 0.9rem;
+  gap: 6px;
+}
+
+.filter-bar input,
+.filter-bar select {
+  background: #ffffff;
+  border: 1px solid #b8c4d2;
+  border-radius: 8px;
+  color: #18202f;
+  min-height: 42px;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.report-table-wrap {
+  overflow-x: auto;
+}
+
+.report-table {
+  border-collapse: collapse;
+  min-width: 860px;
+  width: 100%;
+}
+
+.report-table th,
+.report-table td {
+  border-bottom: 1px solid #dfe6ef;
+  padding: 12px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.report-table th {
+  color: #5a6678;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+.report-table td {
+  color: #263245;
+  font-size: 0.92rem;
+}
+
+.empty-state {
+  background: #f7f9fc;
+  border: 1px dashed #b8c4d2;
+  border-radius: 8px;
+  color: #5a6678;
+  margin-bottom: 0;
+  padding: 18px;
+  text-align: center;
 }
 
 .request-item {
@@ -309,8 +385,14 @@ h3 {
   }
 
   .content-grid,
-  .metric-grid {
+  .metric-grid,
+  .filter-bar {
     grid-template-columns: 1fr;
+  }
+
+  .list-header {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .request-item {

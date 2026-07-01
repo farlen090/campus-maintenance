@@ -75,108 +75,165 @@ export function ReportDetailPage({
     setCommentError("");
   }
 
+  function formatTimestamp(value: string) {
+    return new Date(value).toLocaleString("id-ID", {
+      dateStyle: "medium",
+      timeStyle: "short"
+    });
+  }
+
+  const priorityClass = request.priority.toLowerCase().replace(/\s+/g, "-");
+
   return (
     <section className="detail-panel" aria-labelledby="report-detail-title">
-      <button className="secondary-button" type="button" onClick={onBack}>
-        Kembali ke Daftar
-      </button>
-
-      <div className="detail-header">
-        <div>
-          <p className="eyebrow">ISSUE-05</p>
-          <h2 id="report-detail-title">
-            {request.id} - {request.title}
-          </h2>
-        </div>
-        <span className={`status-badge ${request.statusKey}`}>
-          {request.status}
-        </span>
-      </div>
-
-      <div className="detail-grid">
-        <article className="detail-section">
-          <h3>Deskripsi</h3>
-          <p>{request.description}</p>
-        </article>
-
-        <article className="detail-section">
-          <h3>Informasi</h3>
-          <dl className="info-list">
-            <div>
-              <dt>Lokasi</dt>
-              <dd>{request.location}</dd>
-            </div>
-            <div>
-              <dt>Kategori</dt>
-              <dd>{request.category}</dd>
-            </div>
-            <div>
-              <dt>Prioritas</dt>
-              <dd>{request.priority}</dd>
-            </div>
-            <div>
-              <dt>Pelapor</dt>
-              <dd>{reporterName}</dd>
-            </div>
-            <div>
-              <dt>Teknisi</dt>
-              <dd>{technicianName}</dd>
-            </div>
-          </dl>
-        </article>
-      </div>
-
-      <article className="detail-section">
-        <h3>Komentar dan Catatan</h3>
-        <form className="comment-form" onSubmit={handleSubmit} noValidate>
-          <label>
-            <span>Tulis komentar</span>
-            <textarea
-              aria-label="Tulis komentar"
-              rows={3}
-              value={message}
-              onChange={(event) => setMessage(event.target.value)}
-            />
-          </label>
-          {commentError ? (
-            <p className="field-error" role="alert">
-              {commentError}
-            </p>
-          ) : null}
-          <button className="primary-button" type="submit">
-            Tambah Komentar
+      <div className="detail-shell">
+        <div className="detail-topbar">
+          <button className="secondary-button" type="button" onClick={onBack}>
+            ← Kembali ke Daftar
           </button>
-        </form>
-
-        <div className="timeline-list">
-          {requestComments.length === 0 ? (
-            <p className="muted-text">Belum ada komentar.</p>
-          ) : (
-            requestComments.map((comment) => (
-              <div className="timeline-item" key={comment.id}>
-                <strong>{userNames.get(comment.authorId) ?? "User tidak dikenal"}</strong>
-                <span>{comment.commentType === "work_note" ? "Catatan kerja" : "Komentar"}</span>
-                <p>{comment.message}</p>
-              </div>
-            ))
-          )}
+          <div className="detail-topbar-meta">
+            <span className={`status-badge ${request.statusKey}`}>
+              {request.status}
+            </span>
+            <span className={`priority-badge ${priorityClass}`}>
+              {request.priority}
+            </span>
+          </div>
         </div>
-      </article>
 
-      <article className="detail-section">
-        <h3>Riwayat Status</h3>
-        <div className="timeline-list">
-          {requestHistories.map((history) => (
-            <div className="timeline-item" key={history.id}>
-              <strong>{history.toStatus}</strong>
-              <span>
-                Oleh {userNames.get(history.changedBy) ?? "User tidak dikenal"}
-              </span>
-              {history.note ? <p>{history.note}</p> : null}
+        <div className="detail-hero">
+          <div className="detail-hero-copy">
+            <p className="eyebrow">ISSUE-05 · Detail Laporan</p>
+            <h2 id="report-detail-title">
+              {request.id} · {request.title}
+            </h2>
+            <p className="detail-hero-description">{request.description}</p>
+          </div>
+          <div className="detail-hero-quickstats">
+            <div>
+              <span>Lokasi</span>
+              <strong>{request.location}</strong>
             </div>
-          ))}
+            <div>
+              <span>Kategori</span>
+              <strong>{request.category}</strong>
+            </div>
+            <div>
+              <span>Pelapor</span>
+              <strong>{reporterName}</strong>
+            </div>
+          </div>
         </div>
-      </article>
+
+        <div className="detail-grid">
+          <div className="detail-main-column">
+            <article className="detail-card">
+              <div className="card-title-bar">
+                <h3>Informasi Laporan</h3>
+              </div>
+              <dl className="info-list">
+                <div>
+                  <dt>Lokasi</dt>
+                  <dd>{request.location}</dd>
+                </div>
+                <div>
+                  <dt>Kategori</dt>
+                  <dd>{request.category}</dd>
+                </div>
+                <div>
+                  <dt>Prioritas</dt>
+                  <dd>{request.priority}</dd>
+                </div>
+                <div>
+                  <dt>Pelapor</dt>
+                  <dd>{reporterName}</dd>
+                </div>
+                <div>
+                  <dt>Teknisi</dt>
+                  <dd>{technicianName}</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article className="detail-card">
+              <div className="card-title-bar">
+                <h3>Deskripsi</h3>
+              </div>
+              <p className="detail-summary-copy">{request.description}</p>
+            </article>
+          </div>
+
+          <div className="detail-side-column">
+            <article className="detail-card">
+              <div className="card-title-bar">
+                <h3>Riwayat Status</h3>
+              </div>
+              <div className="timeline-list">
+                {requestHistories.length === 0 ? (
+                  <p className="muted-text">Belum ada riwayat status.</p>
+                ) : (
+                  requestHistories.map((history) => (
+                    <div className="timeline-item" key={history.id}>
+                      <div className="timeline-meta">
+                        <strong>{history.toStatus}</strong>
+                        <span>{formatTimestamp(history.createdAt)}</span>
+                      </div>
+                      <span className="timeline-tag">
+                        Oleh {userNames.get(history.changedBy) ?? "User tidak dikenal"}
+                      </span>
+                      {history.note ? <p>{history.note}</p> : null}
+                    </div>
+                  ))
+                )}
+              </div>
+            </article>
+
+            <article className="detail-card">
+              <div className="card-title-bar">
+                <h3>Komentar & Catatan</h3>
+              </div>
+              <form className="comment-form" onSubmit={handleSubmit} noValidate>
+                <label>
+                  <span>Tulis komentar</span>
+                  <textarea
+                    aria-label="Tulis komentar"
+                    rows={4}
+                    value={message}
+                    onChange={(event) => setMessage(event.target.value)}
+                  />
+                </label>
+                {commentError ? (
+                  <p className="field-error" role="alert">
+                    {commentError}
+                  </p>
+                ) : null}
+                <button className="primary-button" type="submit">
+                  Tambah Komentar
+                </button>
+              </form>
+
+              <div className="timeline-list comment-timeline">
+                {requestComments.length === 0 ? (
+                  <p className="muted-text">Belum ada komentar.</p>
+                ) : (
+                  requestComments.map((comment) => (
+                    <div className="timeline-item" key={comment.id}>
+                      <div className="timeline-meta">
+                        <strong>{userNames.get(comment.authorId) ?? "User tidak dikenal"}</strong>
+                        <span>{formatTimestamp(comment.createdAt)}</span>
+                      </div>
+                      <span className="timeline-tag">
+                        {comment.commentType === "work_note" ? "Catatan kerja" : "Komentar"}
+                      </span>
+                      <p>{comment.message}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

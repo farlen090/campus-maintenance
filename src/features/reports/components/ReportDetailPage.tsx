@@ -105,7 +105,7 @@ export function ReportDetailPage({
           <div className="detail-hero-copy">
             <p className="eyebrow">ISSUE-05 · Detail Laporan</p>
             <h2 id="report-detail-title">
-              {request.id} · {request.title}
+              {request.id} - {request.title}
             </h2>
             <p className="detail-hero-description">{request.description}</p>
           </div>

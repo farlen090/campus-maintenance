@@ -1,5 +1,4 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { RoleSelector } from "../features/users/components/RoleSelector";
 import {
   CreateReportForm,
   type CreateReportInput,
@@ -31,19 +30,7 @@ const navigationItems = [
 
 type SessionActor = "pelapor" | "admin" | "teknisi" | null;
 
-function resolveRole(actor: SessionActor): UserRole {
-  switch (actor) {
-    case "admin":
-      return "admin";
-    case "teknisi":
-      return "technician";
-    default:
-      return "student";
-  }
-}
-
 export function App() {
-  const [activeRole, setActiveRole] = useState<UserRole>("student");
   const [activeNav, setActiveNav] = useState("Dashboard");
   const [sessionActor, setSessionActor] = useState<SessionActor>(() => {
     if (typeof window === "undefined") {
@@ -69,6 +56,18 @@ export function App() {
     initialStatusHistories
   );
 
+  const activeRole = useMemo<UserRole>(() => {
+    if (sessionActor === "admin") {
+      return "admin";
+    }
+
+    if (sessionActor === "teknisi") {
+      return "technician";
+    }
+
+    return "student";
+  }, [sessionActor]);
+
   const activeReporter = useMemo(() => {
     if (activeRole !== "student" && activeRole !== "staff") {
       return null;
@@ -90,9 +89,12 @@ export function App() {
     }
   }, [sessionActor]);
 
-  const currentNav = visibleNavigationItems.includes(activeNav)
-    ? activeNav
-    : visibleNavigationItems[0] ?? "Dashboard";
+  const currentNav =
+    activeNav === "Detail Laporan"
+      ? "Detail Laporan"
+      : visibleNavigationItems.includes(activeNav)
+        ? activeNav
+        : visibleNavigationItems[0] ?? "Dashboard";
 
   const dashboardCounts = useMemo(
     () => ({
@@ -190,7 +192,6 @@ export function App() {
     if (normalizedActor === "pelapor" || normalizedActor === "admin" || normalizedActor === "teknisi") {
       window.localStorage.setItem("userRole", normalizedActor);
       setSessionActor(normalizedActor);
-      setActiveRole(resolveRole(normalizedActor));
       setLoginError("");
       setLoginInput("");
       setSelectedRequestId(null);
@@ -212,7 +213,6 @@ export function App() {
   function handleLogout() {
     window.localStorage.removeItem("userRole");
     setSessionActor(null);
-    setActiveRole("student");
     setLoginInput("");
     setLoginError("");
     setSelectedRequestId(null);
@@ -335,7 +335,6 @@ export function App() {
           <button className="secondary-button" type="button" onClick={handleLogout}>
             Logout
           </button>
-          <RoleSelector value={activeRole} onChange={setActiveRole} />
         </div>
       </header>
 

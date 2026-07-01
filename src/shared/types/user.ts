@@ -16,4 +16,6 @@ export type User = {
   email: string;
   role: UserRole;
   department?: string;
+  createdAt: string;
+  updatedAt: string;
 };

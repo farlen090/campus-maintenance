@@ -24,6 +24,8 @@ export type RequestCategory =
   | "Laboratorium"
   | "Lainnya";
 
+export type RequestCommentType = "comment" | "work_note" | "reopen_note";
+
 export type ServiceRequest = {
   id: string;
   title: string;
@@ -35,5 +37,30 @@ export type ServiceRequest = {
   statusKey: RequestStatusKey;
   reporterId: string;
   assignedTechnicianId: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  resolvedAt: string | null;
+  closedAt: string | null;
+  reopenReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RequestComment = {
+  id: string;
+  requestId: string;
+  authorId: string;
+  commentType: RequestCommentType;
+  message: string;
+  createdAt: string;
+};
+
+export type StatusHistory = {
+  id: string;
+  requestId: string;
+  changedBy: string;
+  fromStatus: RequestStatus | null;
+  toStatus: RequestStatus;
+  note: string | null;
   createdAt: string;
 };

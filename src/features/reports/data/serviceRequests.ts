@@ -12,7 +12,13 @@ export const serviceRequests: ServiceRequest[] = [
     statusKey: "submitted",
     reporterId: "USR-001",
     assignedTechnicianId: null,
-    createdAt: "2026-06-29T08:00:00Z"
+    reviewedBy: null,
+    reviewedAt: null,
+    resolvedAt: null,
+    closedAt: null,
+    reopenReason: null,
+    createdAt: "2026-06-29T08:00:00Z",
+    updatedAt: "2026-06-29T08:00:00Z"
   },
   {
     id: "REQ-002",
@@ -25,7 +31,13 @@ export const serviceRequests: ServiceRequest[] = [
     statusKey: "assigned",
     reporterId: "USR-002",
     assignedTechnicianId: "USR-004",
-    createdAt: "2026-06-29T08:20:00Z"
+    reviewedBy: "USR-003",
+    reviewedAt: "2026-06-29T08:35:00Z",
+    resolvedAt: null,
+    closedAt: null,
+    reopenReason: null,
+    createdAt: "2026-06-29T08:20:00Z",
+    updatedAt: "2026-06-29T08:45:00Z"
   },
   {
     id: "REQ-003",
@@ -38,7 +50,13 @@ export const serviceRequests: ServiceRequest[] = [
     statusKey: "in-progress",
     reporterId: "USR-002",
     assignedTechnicianId: "USR-004",
-    createdAt: "2026-06-29T09:00:00Z"
+    reviewedBy: "USR-003",
+    reviewedAt: "2026-06-29T09:12:00Z",
+    resolvedAt: null,
+    closedAt: null,
+    reopenReason: null,
+    createdAt: "2026-06-29T09:00:00Z",
+    updatedAt: "2026-06-29T10:00:00Z"
   },
   {
     id: "REQ-004",
@@ -51,6 +69,50 @@ export const serviceRequests: ServiceRequest[] = [
     statusKey: "closed",
     reporterId: "USR-001",
     assignedTechnicianId: "USR-006",
-    createdAt: "2026-06-28T14:30:00Z"
+    reviewedBy: "USR-003",
+    reviewedAt: "2026-06-28T14:45:00Z",
+    resolvedAt: "2026-06-28T16:00:00Z",
+    closedAt: "2026-06-28T16:20:00Z",
+    reopenReason: null,
+    createdAt: "2026-06-28T14:30:00Z",
+    updatedAt: "2026-06-28T16:20:00Z"
+  },
+  {
+    id: "REQ-005",
+    title: "Lampu koridor lantai 2 mati",
+    description: "Beberapa lampu koridor mati dan membuat area kurang terang.",
+    location: "Koridor Lantai 2",
+    category: "Lainnya",
+    priority: "Medium",
+    status: "Under Review",
+    statusKey: "under-review",
+    reporterId: "USR-001",
+    assignedTechnicianId: null,
+    reviewedBy: "USR-003",
+    reviewedAt: "2026-06-29T11:20:00Z",
+    resolvedAt: null,
+    closedAt: null,
+    reopenReason: null,
+    createdAt: "2026-06-29T11:00:00Z",
+    updatedAt: "2026-06-29T11:20:00Z"
+  },
+  {
+    id: "REQ-006",
+    title: "Meja praktikum laboratorium rusak",
+    description: "Satu meja praktikum goyah dan perlu diperbaiki sebelum kelas berikutnya.",
+    location: "Laboratorium Fisika",
+    category: "Laboratorium",
+    priority: "High",
+    status: "Resolved",
+    statusKey: "resolved",
+    reporterId: "USR-002",
+    assignedTechnicianId: "USR-006",
+    reviewedBy: "USR-003",
+    reviewedAt: "2026-06-28T10:20:00Z",
+    resolvedAt: "2026-06-28T13:40:00Z",
+    closedAt: null,
+    reopenReason: null,
+    createdAt: "2026-06-28T10:00:00Z",
+    updatedAt: "2026-06-28T13:40:00Z"
   }
 ];

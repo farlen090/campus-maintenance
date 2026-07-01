@@ -16,6 +16,7 @@ type ReportListPageProps = {
   requests: ServiceRequest[];
   users: User[];
   onCreateClick: () => void;
+  onSelectRequest: (requestId: string) => void;
 };
 
 type FilterValues = {
@@ -33,7 +34,8 @@ const initialFilters: FilterValues = {
 export function ReportListPage({
   requests,
   users,
-  onCreateClick
+  onCreateClick,
+  onSelectRequest
 }: ReportListPageProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<FilterValues>(initialFilters);
@@ -163,6 +165,7 @@ export function ReportListPage({
                 <th>Prioritas</th>
                 <th>Status</th>
                 <th>Teknisi</th>
+                <th>Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -183,6 +186,15 @@ export function ReportListPage({
                       ? technicianNames.get(request.assignedTechnicianId) ??
                         "Teknisi tidak dikenal"
                       : "Belum ditugaskan"}
+                  </td>
+                  <td>
+                    <button
+                      className="secondary-button"
+                      type="button"
+                      onClick={() => onSelectRequest(request.id)}
+                    >
+                      Lihat Detail
+                    </button>
                   </td>
                 </tr>
               ))}

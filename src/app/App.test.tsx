@@ -184,4 +184,64 @@ describe("App shell", () => {
       screen.queryByText("Internet laboratorium bermasalah")
     ).not.toBeInTheDocument();
   });
+
+  it("TC-014 opens report detail with complete information", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Daftar Laporan" }));
+    await user.type(screen.getByLabelText("Cari laporan"), "internet");
+    await user.click(screen.getByRole("button", { name: "Lihat Detail" }));
+
+    expect(
+      screen.getByRole("heading", {
+        name: "REQ-002 - Internet laboratorium bermasalah"
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Koneksi internet sering putus saat praktikum.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Laboratorium Komputer")).toBeInTheDocument();
+    expect(screen.getByText("Internet")).toBeInTheDocument();
+    expect(screen.getByText("Urgent")).toBeInTheDocument();
+    expect(screen.getByText("Sinta Staff")).toBeInTheDocument();
+    expect(screen.getByText("Andi Teknisi IT")).toBeInTheDocument();
+  });
+
+  it("TC-015 shows report status history", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Daftar Laporan" }));
+    await user.type(screen.getByLabelText("Cari laporan"), "internet");
+    await user.click(screen.getByRole("button", { name: "Lihat Detail" }));
+
+    expect(screen.getByText("Laporan dibuat oleh staff akademik.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Admin memeriksa dampak gangguan internet.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Ditugaskan ke teknisi IT.")).toBeInTheDocument();
+    expect(screen.getAllByText("Submitted").length).toBeGreaterThan(0);
+    expect(screen.getByText("Under Review")).toBeInTheDocument();
+    expect(screen.getAllByText("Assigned").length).toBeGreaterThan(0);
+  });
+
+  it("TC-016 adds a new comment to report detail", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Daftar Laporan" }));
+    await user.type(screen.getByLabelText("Cari laporan"), "internet");
+    await user.click(screen.getByRole("button", { name: "Lihat Detail" }));
+    await user.type(
+      screen.getByLabelText("Tulis komentar"),
+      "Mohon dicek juga koneksi ke komputer dosen."
+    );
+    await user.click(screen.getByRole("button", { name: "Tambah Komentar" }));
+
+    expect(
+      screen.getByText("Mohon dicek juga koneksi ke komputer dosen.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Farlen Mahasiswa")).toBeInTheDocument();
+  });
 });

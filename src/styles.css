@@ -123,14 +123,16 @@ h3 {
 .summary-panel,
 .request-panel,
 .form-panel,
-.list-panel {
+.list-panel,
+.detail-panel {
   background: #ffffff;
   border: 1px solid #d9e1ea;
   border-radius: 8px;
   padding: 20px;
 }
 
-.list-panel {
+.list-panel,
+.detail-panel {
   grid-column: 1 / -1;
 }
 
@@ -344,6 +346,114 @@ h3 {
   padding: 10px 16px;
 }
 
+.secondary-button {
+  background: #ffffff;
+  border: 1px solid #cdd7e3;
+  border-radius: 8px;
+  color: #344056;
+  cursor: pointer;
+  min-height: 38px;
+  padding: 8px 12px;
+}
+
+.detail-header {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.detail-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  margin-top: 16px;
+}
+
+.detail-section {
+  background: #f7f9fc;
+  border: 1px solid #dfe6ef;
+  border-radius: 8px;
+  margin-top: 14px;
+  padding: 14px;
+}
+
+.detail-section p {
+  color: #405066;
+  margin-bottom: 0;
+}
+
+.info-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.info-list div {
+  display: grid;
+  gap: 4px;
+}
+
+.info-list dt {
+  color: #5a6678;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.info-list dd {
+  margin: 0;
+}
+
+.comment-form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.comment-form label {
+  color: #405066;
+  display: grid;
+  font-size: 0.92rem;
+  gap: 7px;
+}
+
+.comment-form textarea {
+  background: #ffffff;
+  border: 1px solid #b8c4d2;
+  border-radius: 8px;
+  color: #18202f;
+  padding: 9px 10px;
+  resize: vertical;
+  width: 100%;
+}
+
+.field-error {
+  color: #7a271a;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+.timeline-list {
+  display: grid;
+  gap: 10px;
+}
+
+.timeline-item {
+  background: #ffffff;
+  border: 1px solid #dfe6ef;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+}
+
+.timeline-item span {
+  color: #5a6678;
+  font-size: 0.85rem;
+}
+
 .validation-summary,
 .success-summary {
   border-radius: 8px;
@@ -386,11 +496,13 @@ h3 {
 
   .content-grid,
   .metric-grid,
-  .filter-bar {
+  .filter-bar,
+  .detail-grid {
     grid-template-columns: 1fr;
   }
 
-  .list-header {
+  .list-header,
+  .detail-header {
     align-items: stretch;
     flex-direction: column;
   }

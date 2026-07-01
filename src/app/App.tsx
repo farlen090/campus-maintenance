@@ -5,11 +5,20 @@ import {
   type CreateReportInput,
   type CreatedReportResult
 } from "../features/reports/components/CreateReportForm";
+import {
+  ReportDetailPage,
+  type AddCommentInput
+} from "../features/reports/components/ReportDetailPage";
 import { ReportListPage } from "../features/reports/components/ReportListPage";
 import { requestStatusKeys } from "../features/reports/constants";
+import { requestComments as initialRequestComments } from "../features/reports/data/requestComments";
 import { statusHistories as initialStatusHistories } from "../features/reports/data/statusHistories";
 import { serviceRequests } from "../features/reports/data/serviceRequests";
-import type { ServiceRequest, StatusHistory } from "../features/reports/types";
+import type {
+  RequestComment,
+  ServiceRequest,
+  StatusHistory
+} from "../features/reports/types";
 import { users } from "../shared/data/users";
 import type { UserRole } from "../shared/types/user";
 
@@ -23,7 +32,11 @@ const navigationItems = [
 export function App() {
   const [activeRole, setActiveRole] = useState<UserRole>("student");
   const [activeNav, setActiveNav] = useState("Dashboard");
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [requests, setRequests] = useState<ServiceRequest[]>(serviceRequests);
+  const [requestComments, setRequestComments] = useState<RequestComment[]>(
+    initialRequestComments
+  );
   const [statusHistories, setStatusHistories] = useState<StatusHistory[]>(
     initialStatusHistories
   );
@@ -58,6 +71,19 @@ export function App() {
       (request) => request.assignedTechnicianId === "USR-004"
     );
   }, [activeRole, requests]);
+
+  const activeUser = useMemo(
+    () => users.find((user) => user.role === activeRole) ?? users[0],
+    [activeRole]
+  );
+
+  const selectedRequest = useMemo(
+    () =>
+      selectedRequestId
+        ? requests.find((request) => request.id === selectedRequestId) ?? null
+        : null,
+    [requests, selectedRequestId]
+  );
 
   function handleCreateReport(input: CreateReportInput): CreatedReportResult {
     const createdAt = new Date().toISOString();
@@ -100,6 +126,26 @@ export function App() {
     };
   }
 
+  function handleSelectRequest(requestId: string) {
+    setSelectedRequestId(requestId);
+    setActiveNav("Detail Laporan");
+  }
+
+  function handleAddComment(input: AddCommentInput): RequestComment {
+    const newComment: RequestComment = {
+      id: `COM-${String(requestComments.length + 1).padStart(3, "0")}`,
+      requestId: input.requestId,
+      authorId: activeUser.id,
+      commentType: "comment",
+      message: input.message,
+      createdAt: new Date().toISOString()
+    };
+
+    setRequestComments((currentComments) => [...currentComments, newComment]);
+
+    return newComment;
+  }
+
   const latestRequests = visibleRequests.slice(0, 4);
 
   return (
@@ -126,11 +172,21 @@ export function App() {
       </nav>
 
       <main className="content-grid">
-        {activeNav === "Daftar Laporan" ? (
+        {activeNav === "Detail Laporan" && selectedRequest ? (
+          <ReportDetailPage
+            request={selectedRequest}
+            users={users}
+            comments={requestComments}
+            histories={statusHistories}
+            onBack={() => setActiveNav("Daftar Laporan")}
+            onAddComment={handleAddComment}
+          />
+        ) : activeNav === "Daftar Laporan" ? (
           <ReportListPage
             requests={visibleRequests}
             users={users}
             onCreateClick={() => setActiveNav("Buat Laporan")}
+            onSelectRequest={handleSelectRequest}
           />
         ) : activeNav === "Buat Laporan" ? (
           <CreateReportForm
@@ -166,7 +222,7 @@ export function App() {
           </section>
         )}
 
-        {activeNav === "Daftar Laporan" ? null : (
+        {activeNav === "Daftar Laporan" || activeNav === "Detail Laporan" ? null : (
           <section className="request-panel" aria-labelledby="requests-title">
             <div className="section-heading">
               <p className="eyebrow">Dummy data</p>

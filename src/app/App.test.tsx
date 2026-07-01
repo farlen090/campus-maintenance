@@ -1,8 +1,12 @@
 import "@testing-library/jest-dom/vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { App } from "./App";
+
+beforeEach(() => {
+  window.localStorage.setItem("userRole", "admin");
+});
 
 describe("App shell", () => {
   it("TC-001 renders the app shell", () => {
@@ -243,5 +247,20 @@ describe("App shell", () => {
       screen.getByText("Mohon dicek juga koneksi ke komputer dosen.")
     ).toBeInTheDocument();
     expect(screen.getByText("Farlen Mahasiswa")).toBeInTheDocument();
+  });
+
+  it("TC-017 logs in with a simulated actor", async () => {
+    window.localStorage.removeItem("userRole");
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(
+      screen.getByLabelText("Masukkan Username/Aktor Anda"),
+      "pelapor"
+    );
+    await user.click(screen.getByRole("button", { name: "Masuk" }));
+
+    expect(screen.getByText("Aktor aktif: pelapor")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
   });
 });

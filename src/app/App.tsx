@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { RoleSelector } from "../features/users/components/RoleSelector";
 import {
   CreateReportForm,
@@ -29,9 +29,37 @@ const navigationItems = [
   "Tugas Teknisi"
 ];
 
+type SessionActor = "pelapor" | "admin" | "teknisi" | null;
+
+function resolveRole(actor: SessionActor): UserRole {
+  switch (actor) {
+    case "admin":
+      return "admin";
+    case "teknisi":
+      return "technician";
+    default:
+      return "student";
+  }
+}
+
 export function App() {
   const [activeRole, setActiveRole] = useState<UserRole>("student");
   const [activeNav, setActiveNav] = useState("Dashboard");
+  const [sessionActor, setSessionActor] = useState<SessionActor>(() => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+
+    const storedRole = window.localStorage.getItem("userRole");
+
+    if (storedRole === "pelapor" || storedRole === "admin" || storedRole === "teknisi") {
+      return storedRole;
+    }
+
+    return null;
+  });
+  const [loginInput, setLoginInput] = useState("");
+  const [loginError, setLoginError] = useState("");
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [requests, setRequests] = useState<ServiceRequest[]>(serviceRequests);
   const [requestComments, setRequestComments] = useState<RequestComment[]>(
@@ -49,6 +77,23 @@ export function App() {
     return users.find((user) => user.role === activeRole) ?? null;
   }, [activeRole]);
 
+  const visibleNavigationItems = useMemo(() => {
+    switch (sessionActor) {
+      case "pelapor":
+        return ["Dashboard", "Daftar Laporan", "Buat Laporan"];
+      case "admin":
+        return ["Dashboard", "Daftar Laporan", "Buat Laporan"];
+      case "teknisi":
+        return ["Dashboard", "Daftar Laporan", "Tugas Teknisi"];
+      default:
+        return [];
+    }
+  }, [sessionActor]);
+
+  const currentNav = visibleNavigationItems.includes(activeNav)
+    ? activeNav
+    : visibleNavigationItems[0] ?? "Dashboard";
+
   const dashboardCounts = useMemo(
     () => ({
       totalRequests: requests.length,
@@ -63,14 +108,20 @@ export function App() {
   );
 
   const visibleRequests = useMemo(() => {
-    if (activeRole !== "technician") {
-      return requests;
+    if (sessionActor === "pelapor") {
+      return requests.filter(
+        (request) => request.reporterId === activeReporter?.id
+      );
     }
 
-    return requests.filter(
-      (request) => request.assignedTechnicianId === "USR-004"
-    );
-  }, [activeRole, requests]);
+    if (sessionActor === "teknisi") {
+      return requests.filter(
+        (request) => request.assignedTechnicianId === "USR-004"
+      );
+    }
+
+    return requests;
+  }, [activeReporter?.id, requests, sessionActor]);
 
   const activeUser = useMemo(
     () => users.find((user) => user.role === activeRole) ?? users[0],
@@ -131,6 +182,91 @@ export function App() {
     setActiveNav("Detail Laporan");
   }
 
+  function handleLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const normalizedActor = loginInput.trim().toLowerCase();
+
+    if (normalizedActor === "pelapor" || normalizedActor === "admin" || normalizedActor === "teknisi") {
+      window.localStorage.setItem("userRole", normalizedActor);
+      setSessionActor(normalizedActor);
+      setActiveRole(resolveRole(normalizedActor));
+      setLoginError("");
+      setLoginInput("");
+      setSelectedRequestId(null);
+
+      if (normalizedActor === "pelapor") {
+        setActiveNav("Buat Laporan");
+      } else if (normalizedActor === "teknisi") {
+        setActiveNav("Tugas Teknisi");
+      } else {
+        setActiveNav("Daftar Laporan");
+      }
+
+      return;
+    }
+
+    setLoginError("Aktor tidak dikenal! Gunakan 'pelapor', 'admin', atau 'teknisi'.");
+  }
+
+  function handleLogout() {
+    window.localStorage.removeItem("userRole");
+    setSessionActor(null);
+    setActiveRole("student");
+    setLoginInput("");
+    setLoginError("");
+    setSelectedRequestId(null);
+    setActiveNav("Dashboard");
+  }
+
+  function handleAdminDemo(action: "priority" | "assign") {
+    if (!selectedRequestId && requests.length === 0) {
+      return;
+    }
+
+    const targetRequest = requests.find((request) => request.id === selectedRequestId) ?? requests[0];
+
+    if (!targetRequest) {
+      return;
+    }
+
+    const updatedAt = new Date().toISOString();
+    const newStatus = action === "assign" ? "Assigned" : targetRequest.status;
+    const updatedPriority = action === "priority" ? "High" : targetRequest.priority;
+    const updatedAssignedTechnicianId = action === "assign" ? "USR-004" : targetRequest.assignedTechnicianId;
+
+    setRequests((currentRequests) =>
+      currentRequests.map((request) =>
+        request.id === targetRequest.id
+          ? {
+              ...request,
+              priority: updatedPriority,
+              assignedTechnicianId: updatedAssignedTechnicianId,
+              status: newStatus,
+              statusKey: requestStatusKeys[newStatus as keyof typeof requestStatusKeys],
+              updatedAt
+            }
+          : request
+      )
+    );
+
+    setStatusHistories((currentHistories) => [
+      {
+        id: `HIS-${String(currentHistories.length + 1).padStart(3, "0")}`,
+        requestId: targetRequest.id,
+        changedBy: activeUser.id,
+        fromStatus: targetRequest.status,
+        toStatus: newStatus,
+        note:
+          action === "priority"
+            ? "Prioritas diset ke High oleh admin simulasi."
+            : "Laporan ditugaskan ke teknisi IT oleh admin simulasi.",
+        createdAt: updatedAt
+      },
+      ...currentHistories
+    ]);
+  }
+
   function handleAddComment(input: AddCommentInput): RequestComment {
     const newComment: RequestComment = {
       id: `COM-${String(requestComments.length + 1).padStart(3, "0")}`,
@@ -148,6 +284,42 @@ export function App() {
 
   const latestRequests = visibleRequests.slice(0, 4);
 
+  if (sessionActor === null) {
+    return (
+      <div className="auth-shell">
+        <section className="auth-card" aria-labelledby="login-title">
+          <p className="eyebrow">FR-13 · Login Simulasi</p>
+          <h1 id="login-title">Masuk ke Campus Maintenance</h1>
+          <p className="auth-copy">
+            Masukkan salah satu aktor dummy berikut: pelapor, admin, atau teknisi.
+          </p>
+          <form className="auth-form" onSubmit={handleLogin} noValidate>
+            <label htmlFor="actor-login">
+              <span>Masukkan Username/Aktor Anda</span>
+              <input
+                id="actor-login"
+                aria-label="Masukkan Username/Aktor Anda"
+                autoComplete="off"
+                onChange={(event) => setLoginInput(event.target.value)}
+                placeholder="Contoh: pelapor"
+                type="text"
+                value={loginInput}
+              />
+            </label>
+            {loginError ? (
+              <p className="field-error" role="alert">
+                {loginError}
+              </p>
+            ) : null}
+            <button className="primary-button" type="submit">
+              Masuk
+            </button>
+          </form>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -155,13 +327,22 @@ export function App() {
           <p className="eyebrow">Campus Service Request</p>
           <h1>Campus Maintenance</h1>
         </div>
-        <RoleSelector value={activeRole} onChange={setActiveRole} />
+        <div className="header-actions">
+          <div className="session-pill">
+            <span>Aktor aktif</span>
+            <strong>{sessionActor}</strong>
+          </div>
+          <button className="secondary-button" type="button" onClick={handleLogout}>
+            Logout
+          </button>
+          <RoleSelector value={activeRole} onChange={setActiveRole} />
+        </div>
       </header>
 
       <nav className="main-nav" aria-label="Navigasi utama">
-        {navigationItems.map((item) => (
+        {visibleNavigationItems.map((item) => (
           <button
-            className={item === activeNav ? "nav-item active" : "nav-item"}
+            className={item === currentNav ? "nav-item active" : "nav-item"}
             key={item}
             onClick={() => setActiveNav(item)}
             type="button"
@@ -172,7 +353,7 @@ export function App() {
       </nav>
 
       <main className="content-grid">
-        {activeNav === "Detail Laporan" && selectedRequest ? (
+        {currentNav === "Detail Laporan" && selectedRequest ? (
           <ReportDetailPage
             request={selectedRequest}
             users={users}
@@ -181,18 +362,51 @@ export function App() {
             onBack={() => setActiveNav("Daftar Laporan")}
             onAddComment={handleAddComment}
           />
-        ) : activeNav === "Daftar Laporan" ? (
+        ) : currentNav === "Daftar Laporan" ? (
+          <>
+            {sessionActor === "admin" ? (
+              <section className="admin-panel" aria-labelledby="admin-sim-title">
+                <div className="section-heading">
+                  <p className="eyebrow">Simulasi Admin</p>
+                  <h2 id="admin-sim-title">Kelola prioritas & penugasan</h2>
+                </div>
+                <div className="admin-actions">
+                  <button
+                    className="secondary-button"
+                    onClick={() => handleAdminDemo("priority")}
+                    type="button"
+                  >
+                    Tetapkan prioritas High
+                  </button>
+                  <button
+                    className="secondary-button"
+                    onClick={() => handleAdminDemo("assign")}
+                    type="button"
+                  >
+                    Tugaskan ke teknisi
+                  </button>
+                </div>
+              </section>
+            ) : null}
+            <ReportListPage
+              requests={visibleRequests}
+              users={users}
+              onCreateClick={() => setActiveNav("Buat Laporan")}
+              onSelectRequest={handleSelectRequest}
+            />
+          </>
+        ) : currentNav === "Buat Laporan" ? (
+          <CreateReportForm
+            canCreate={activeReporter !== null}
+            reporterName={activeReporter?.name ?? null}
+            onCreate={handleCreateReport}
+          />
+        ) : currentNav === "Tugas Teknisi" ? (
           <ReportListPage
             requests={visibleRequests}
             users={users}
             onCreateClick={() => setActiveNav("Buat Laporan")}
             onSelectRequest={handleSelectRequest}
-          />
-        ) : activeNav === "Buat Laporan" ? (
-          <CreateReportForm
-            canCreate={activeReporter !== null}
-            reporterName={activeReporter?.name ?? null}
-            onCreate={handleCreateReport}
           />
         ) : (
           <section className="summary-panel" aria-labelledby="dashboard-title">
@@ -222,7 +436,7 @@ export function App() {
           </section>
         )}
 
-        {activeNav === "Daftar Laporan" || activeNav === "Detail Laporan" ? null : (
+        {currentNav === "Daftar Laporan" || currentNav === "Detail Laporan" || currentNav === "Tugas Teknisi" ? null : (
           <section className="request-panel" aria-labelledby="requests-title">
             <div className="section-heading">
               <p className="eyebrow">Dummy data</p>

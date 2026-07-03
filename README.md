@@ -36,3 +36,11 @@ Untuk memastikan aplikasi berjalan dengan baik, jalankan:
 npm run test
 npm run build
 ```
+## Panduan Autentikasi dan Deployment (Cloudflare Wrangler)
+
+Aplikasi ini dideploy menggunakan Cloudflare Workers & Pages. Jika ingin menjalankan ulang proses deployment atau melakukan autentikasi dari terminal lokal, ikuti langkah-langkah berikut:
+
+1. **Login ke Akun Cloudflare**
+   Jalankan perintah berikut di terminal untuk menghubungkan terminal laptop dengan akun Cloudflare:
+   ```bash
+   npx wrangler login

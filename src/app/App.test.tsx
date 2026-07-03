@@ -268,4 +268,39 @@ describe("App shell", () => {
     expect(screen.getByText("pelapor")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
   });
+
+  it("TC-018 lets facility manager monitor reports without edit actions", async () => {
+    window.localStorage.removeItem("userRole");
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(
+      screen.getByLabelText("Masukkan Username/Aktor Anda"),
+      "manajer"
+    );
+    await user.click(screen.getByRole("button", { name: "Masuk" }));
+
+    expect(screen.getByText("manajer")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Dashboard" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Daftar Laporan" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Buat Laporan" })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Tugas Teknisi" })
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Daftar Laporan" }));
+    await user.click(screen.getAllByRole("button", { name: "Lihat Detail" })[0]);
+
+    expect(
+      screen.getByText("Manajer fasilitas hanya memantau komentar dan catatan laporan.")
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText("Tulis komentar")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Tambah Komentar" })
+    ).not.toBeInTheDocument();
+  });
 });

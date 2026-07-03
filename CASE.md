@@ -96,7 +96,7 @@ Teknisi harus dapat memperbarui status laporan yang ditugaskan kepada dirinya se
 Sistem harus menampilkan antarmuka yang berbeda sesuai peran pengguna (pelapor, administrator, teknisi, dan manajer fasilitas).
 
 ### FR-13: Login Simulasi Multi-Aktor
-Sistem harus menyediakan mekanisme login simulasi sederhana yang memungkinkan pengguna masuk sebagai pelapor, administrator, atau teknisi melalui input dummy dan penyimpanan sesi lokal.
+Sistem harus menyediakan mekanisme login simulasi sederhana yang memungkinkan pengguna masuk sebagai pelapor, administrator, teknisi, atau manajer fasilitas melalui input dummy dan penyimpanan sesi lokal.
 
 ### FR-14: Logout Session
 Sistem harus menyediakan fitur logout yang menghapus sesi aktif dan mengembalikan pengguna ke halaman login simulasi.

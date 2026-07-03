@@ -15,6 +15,7 @@ Gunakan salah satu kata kunci berikut pada layar login untuk mencoba fitur simul
 - Ketik `pelapor` -> Masuk sebagai Peran Pelapor (Mahasiswa/Staff)
 - Ketik `admin` -> Masuk sebagai Peran Administrator
 - Ketik `teknisi` -> Masuk sebagai Peran Teknisi
+- Ketik `manajer` -> Masuk sebagai Peran Manajer Fasilitas
 
 ## Menjalankan Aplikasi Secara Lokal
 1. Install dependensi:

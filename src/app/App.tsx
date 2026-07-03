@@ -28,7 +28,30 @@ const navigationItems = [
   "Tugas Teknisi"
 ];
 
-type SessionActor = "pelapor" | "admin" | "teknisi" | null;
+type SessionActor = "pelapor" | "admin" | "teknisi" | "manajer" | null;
+
+function normalizeLoginActor(value: string | null): SessionActor {
+  const normalizedActor = value?.trim().toLowerCase() ?? "";
+
+  if (
+    normalizedActor === "pelapor" ||
+    normalizedActor === "admin" ||
+    normalizedActor === "teknisi"
+  ) {
+    return normalizedActor;
+  }
+
+  if (
+    normalizedActor === "manajer" ||
+    normalizedActor === "manajer fasilitas" ||
+    normalizedActor === "manager" ||
+    normalizedActor === "facility_manager"
+  ) {
+    return "manajer";
+  }
+
+  return null;
+}
 
 export function App() {
   const [activeNav, setActiveNav] = useState("Dashboard");
@@ -39,11 +62,7 @@ export function App() {
 
     const storedRole = window.localStorage.getItem("userRole");
 
-    if (storedRole === "pelapor" || storedRole === "admin" || storedRole === "teknisi") {
-      return storedRole;
-    }
-
-    return null;
+    return normalizeLoginActor(storedRole);
   });
   const [loginInput, setLoginInput] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -65,6 +84,10 @@ export function App() {
       return "technician";
     }
 
+    if (sessionActor === "manajer") {
+      return "facility_manager";
+    }
+
     return "student";
   }, [sessionActor]);
 
@@ -84,6 +107,8 @@ export function App() {
         return ["Dashboard", "Daftar Laporan", "Buat Laporan"];
       case "teknisi":
         return ["Dashboard", "Daftar Laporan", "Tugas Teknisi"];
+      case "manajer":
+        return ["Dashboard", "Daftar Laporan"];
       default:
         return [];
     }
@@ -187,9 +212,9 @@ export function App() {
   function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const normalizedActor = loginInput.trim().toLowerCase();
+    const normalizedActor = normalizeLoginActor(loginInput);
 
-    if (normalizedActor === "pelapor" || normalizedActor === "admin" || normalizedActor === "teknisi") {
+    if (normalizedActor !== null) {
       window.localStorage.setItem("userRole", normalizedActor);
       setSessionActor(normalizedActor);
       setLoginError("");
@@ -200,6 +225,8 @@ export function App() {
         setActiveNav("Buat Laporan");
       } else if (normalizedActor === "teknisi") {
         setActiveNav("Tugas Teknisi");
+      } else if (normalizedActor === "manajer") {
+        setActiveNav("Dashboard");
       } else {
         setActiveNav("Daftar Laporan");
       }
@@ -207,7 +234,9 @@ export function App() {
       return;
     }
 
-    setLoginError("Aktor tidak dikenal! Gunakan 'pelapor', 'admin', atau 'teknisi'.");
+    setLoginError(
+      "Aktor tidak dikenal! Gunakan 'pelapor', 'admin', 'teknisi', atau 'manajer'."
+    );
   }
 
   function handleLogout() {
@@ -291,7 +320,8 @@ export function App() {
           <p className="eyebrow">FR-13 · Login Simulasi</p>
           <h1 id="login-title">Masuk ke Campus Maintenance</h1>
           <p className="auth-copy">
-            Masukkan salah satu aktor dummy berikut: pelapor, admin, atau teknisi.
+            Masukkan salah satu aktor dummy berikut: pelapor, admin, teknisi,
+            atau manajer.
           </p>
           <form className="auth-form" onSubmit={handleLogin} noValidate>
             <label htmlFor="actor-login">
@@ -360,6 +390,7 @@ export function App() {
             histories={statusHistories}
             onBack={() => setActiveNav("Daftar Laporan")}
             onAddComment={handleAddComment}
+            canAddComment={sessionActor !== "manajer"}
           />
         ) : currentNav === "Daftar Laporan" ? (
           <>

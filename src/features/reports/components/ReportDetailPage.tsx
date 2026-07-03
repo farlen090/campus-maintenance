@@ -19,6 +19,7 @@ type ReportDetailPageProps = {
   histories: StatusHistory[];
   onBack: () => void;
   onAddComment: (input: AddCommentInput) => RequestComment;
+  canAddComment?: boolean;
 };
 
 export function ReportDetailPage({
@@ -27,7 +28,8 @@ export function ReportDetailPage({
   comments,
   histories,
   onBack,
-  onAddComment
+  onAddComment,
+  canAddComment = true
 }: ReportDetailPageProps) {
   const [message, setMessage] = useState("");
   const [commentError, setCommentError] = useState("");
@@ -192,25 +194,31 @@ export function ReportDetailPage({
               <div className="card-title-bar">
                 <h3>Komentar & Catatan</h3>
               </div>
-              <form className="comment-form" onSubmit={handleSubmit} noValidate>
-                <label>
-                  <span>Tulis komentar</span>
-                  <textarea
-                    aria-label="Tulis komentar"
-                    rows={4}
-                    value={message}
-                    onChange={(event) => setMessage(event.target.value)}
-                  />
-                </label>
-                {commentError ? (
-                  <p className="field-error" role="alert">
-                    {commentError}
-                  </p>
-                ) : null}
-                <button className="primary-button" type="submit">
-                  Tambah Komentar
-                </button>
-              </form>
+              {canAddComment ? (
+                <form className="comment-form" onSubmit={handleSubmit} noValidate>
+                  <label>
+                    <span>Tulis komentar</span>
+                    <textarea
+                      aria-label="Tulis komentar"
+                      rows={4}
+                      value={message}
+                      onChange={(event) => setMessage(event.target.value)}
+                    />
+                  </label>
+                  {commentError ? (
+                    <p className="field-error" role="alert">
+                      {commentError}
+                    </p>
+                  ) : null}
+                  <button className="primary-button" type="submit">
+                    Tambah Komentar
+                  </button>
+                </form>
+              ) : (
+                <p className="muted-text">
+                  Manajer fasilitas hanya memantau komentar dan catatan laporan.
+                </p>
+              )}
 
               <div className="timeline-list comment-timeline">
                 {requestComments.length === 0 ? (

@@ -178,3 +178,27 @@ Terdapat catatan teknis pada eksekusi pengujian lokal (`npm run test` / Vitest),
 Aplikasi telah berhasil dikonfigurasi dan dipublikasikan ke infrastruktur Cloudflare secara live menggunakan otomatisasi Wrangler CLI:
 * **Perintah Cepat:** `npm run deploy` (telah diintegrasikan ke dalam `package.json` lewat perintah eksekusi `wrangler deploy`).
 * **Tautan Aplikasi Live:** [Campus Maintenance Service - Live on Cloudflare](https://campus-maintenance.campus-maintenance.workers.dev)
+
+## 10. Jawaban Open Questions (Refleksi Penggunaan AI)
+
+### Pertanyaan 1: Apakah Anda menggunakan AI asisten untuk membantu menyelesaikan tugas ini? Jika ya, sebutkan fitur/bagian mana yang dibantu oleh AI.
+**Jawaban:**
+Ya, saya menggunakan beberapa macam AI secara bergantian untuk menghemat token dan kuota harian, yaitu:
+1. **Gemini:** Digunakan di luar editor untuk mencari tahu teori, konsep dasar, dan hal-hal umum yang kurang saya mengerti.
+2. **Editor Windsurf & Cascade AI:** Digunakan di dalam lingkungan kerja untuk menyusun struktur komponen React berbasis TypeScript, tabel laporan, form filter, dan visual statis halaman Dashboard.
+3. **Model Premium (Claude Sonnet 4.6, Claude Haiku 4.5, GPT-5.5, & Codex/Codeium):** Digunakan melalui asisten editor untuk melakukan penalaran logika coding, perbaikan bug konfigurasi, hingga otomatisasi pengisian baris kode (*auto-complete*).
+
+---
+
+### Pertanyaan 2: Apakah ada instruksi atau saran dari AI yang sengaja Anda abaikan atau tidak ikuti? Jelaskan alasannya.
+**Jawaban:**
+Ya, ada beberapa instruksi dari AI yang sengaja saya abaikan demi mematuhi batasan proyek dari dosen:
+* **Pengabaian Desain Login Kompleks:** AI sempat menyarankan untuk membuat sistem autentikasi riil menggunakan JWT/Token yang rumit, namun saya abaikan dan tetap memilih menggunakan kecocokan teks string sederhana (simulasi) sesuai perintah pada FR-13.
+* **Penanganan Peran Manajer Fasilitas:** Ketika AI sempat menyarankan untuk menghapus atau menggabungkan peran Manajer Fasilitas karena dianggap serupa dengan Admin, saya mengabaikannya. Saya memilih menerapkan peran Manajer Fasilitas secara mandiri dengan hak akses khusus berupa mode pantauan saja (*read-only monitoring*) agar struktur aktor sistem tetap utuh sesuai spesifikasi awal.
+
+---
+
+### Pertanyaan 3: Kendala apa saja yang Anda hadapi selama proses pengerjaan (baik kendala teknis maupun non-teknis) dan bagaimana Anda mengatasinya?
+**Jawaban:**
+* **Kendala Teknis (Vitest Error):** Saat melakukan verifikasi lokal, runner pengujian Vitest mengalami kegagalan startup dengan error `ERR_PACKAGE_PATH_NOT_EXPORTED` dari skrip lokal. Cara mengatasinya adalah dengan memastikan kualitas kode tetap aman melalui kompilasi `npm run build` yang sukses 100%, serta mengandalkan verifikasi mandiri via manual testing.
+* **Kendala Non-Teknis (Limit Kuota AI):** Di tengah proses sinkronisasi peran dan perbaikan file konfigurasi `package.json`, AI asisten lokal mengalami limit kuota penggunaan (bintang/credit habis). Cara mengatasinya adalah beralih ke pengerjaan manual, melakukan penulisan skrip `"deploy": "wrangler deploy"` secara mandiri di editor, serta mengeksekusi perintah Git dan deployment langsung lewat terminal Windows secara mandiri hingga sukses online.

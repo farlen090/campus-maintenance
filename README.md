@@ -1,3 +1,17 @@
+Tugas Kuliah: Proyek Software Engineering (Campus Service Request)
+
+Nama: Munggilung, Farlen Bernet
+
+NIM: 105022410083
+
+Kelas: (Software Engineering - A)
+
+1. URL Repositori GitHub (Kode Sumber & Dokumentasi Utuh CASE.md):
+https://github.com/farlen090/campus-maintenance
+
+2. URL Aplikasi Live (Cloudflare Workers):
+https://campus-maintenance.campus-maintenance.workers.dev
+
 # Campus Maintenance
 
 Aplikasi web campus service request untuk mendukung proses pengelolaan laporan perbaikan fasilitas kampus.

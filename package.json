@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && node scripts/run-local-tool.cjs vite build",
     "preview": "vite preview",
-    "test": "node scripts/run-local-tool.cjs vitest"
+    "test": "node scripts/run-local-tool.cjs vitest",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "react": "^19.0.0",

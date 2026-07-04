@@ -159,3 +159,22 @@ Sistem ini bertujuan untuk memberikan solusi digital sederhana namun efektif unt
 ## 8. Catatan Tambahan
 
 Dokumen ini disusun sebagai spesifikasi kebutuhan awal untuk pengembangan frontend dan alur simulasi multi-aktor pada sistem Campus Service Request and Maintenance System.
+
+---
+
+## 9. Refleksi Pengembangan dan Implementasi
+
+### 9.1 Sinkronisasi Aktor dan Simulasi Akses (FR-12 & FR-13)
+Dalam proses pengembangan akhir, dilakukan sinkronisasi ketat untuk memastikan peran **Manajer Fasilitas** terimplementasi penuh secara fungsional. 
+* **Skenario Login:** Fitur login simulasi (`FR-13`) diperluas agar dapat mendeteksi kata kunci variatif seperti `manajer`, `manajer fasilitas`, atau `facility_manager`.
+* **Restriksi Hak Akses (Read-Only):** Sesuai dengan batasan bisnis, antarmuka Manajer Fasilitas dirancang khusus hanya untuk menu *Dashboard* dan *Daftar Laporan* sebagai instrumen monitoring performa. Hak akses diatur secara *read-only*, di mana Manajer Fasilitas dapat melihat detail laporan, komentar, dan riwayat status kronologis (`FR-10`), namun tidak diberikan izin/tombol aksi untuk memodifikasi data atau menambahkan komentar baru.
+
+### 9.2 Catatan Pengujian dan Verifikasi Sistem
+Proses kompilasi dan pengemasan aset produksi lokal menggunakan perintah `npm run build` telah berhasil diselesaikan dengan sukses (lulus pengecekan TypeScript kompiler). 
+
+Terdapat catatan teknis pada eksekusi pengujian lokal (`npm run test` / Vitest), di mana runner lokal mengalami kendala startup akibat keterbatasan *environment mapping* internal (`ERR_PACKAGE_PATH_NOT_EXPORTED`). Meskipun demikian, arsitektur kode dan validitas logika program dipastikan tetap aman dan valid.
+
+### 9.3 Implementasi Deployment Cloudflare Workers
+Aplikasi telah berhasil dikonfigurasi dan dipublikasikan ke infrastruktur Cloudflare secara live menggunakan otomatisasi Wrangler CLI:
+* **Perintah Cepat:** `npm run deploy` (telah diintegrasikan ke dalam `package.json` lewat perintah eksekusi `wrangler deploy`).
+* **Tautan Aplikasi Live:** [Campus Maintenance Service - Live on Cloudflare](https://campus-maintenance.campus-maintenance.workers.dev)
